@@ -14,11 +14,11 @@ namespace ScrollViewExtension.Scripts
         {
             for (var i = 0; i < 501; i++)
             {
-                var item = test.CreateItem(new Vector2(200f, 51.32f));
+                var item = test.CreateItem(new Vector2(50, 200));
                 item.num = i;
             }
             
-            test.Show(0);
+            test.Show(0.4024f);
         }
 
         private void Start()

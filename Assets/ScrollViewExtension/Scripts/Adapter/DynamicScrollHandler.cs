@@ -2,7 +2,7 @@
  * ***********************************************
  *
  * 機能名: DynamicScrollView
- * バージョン: 0.1.0
+ * バージョン: 0.2.0
  * 作成日: 2023-12-06
  * 作者: lhyisboss
  * 言語: C#
@@ -17,21 +17,19 @@
  * UseCaseはInputを受け取り、ServiceやEntityとやり取りし、Outputを生成します。
  * Entityは核となるロジック、検証やデータを管理するクラスです。
  *
- * ※：
- * VerticalとHorizontal両方向まとめて実装してはいますが、テストコードやテストなどを行ったのがVertical方向だけ。
- * Horizontal方向はテストしていないので、バグの可能性があり、次のバージョンでまたHorizontal方向のテストを行います。
- *
  * ***********************************************
  */
 
 using System;
 using System.Collections.Generic;
+using ScrollViewExtension.Scripts.Common;
+using ScrollViewExtension.Scripts.Configuration;
+using ScrollViewExtension.Scripts.Core.Entity;
+using ScrollViewExtension.Scripts.Core.Entity.Interface;
+using ScrollViewExtension.Scripts.Core.Service;
+using ScrollViewExtension.Scripts.Core.UseCase;
+using ScrollViewExtension.Scripts.Core.UseCase.Interface;
 using ScrollViewExtension.Scripts.DTO;
-using ScrollViewExtension.Scripts.Entity;
-using ScrollViewExtension.Scripts.Entity.Interface;
-using ScrollViewExtension.Scripts.Service;
-using ScrollViewExtension.Scripts.UseCase;
-using ScrollViewExtension.Scripts.UseCase.Interface;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,6 +48,10 @@ namespace ScrollViewExtension.Scripts.Adapter
         
         [SerializeField] private TItem itemPrefab;
 
+        [SerializeField] private bool isVertical;
+
+        private GroupLayoutConfig config;
+        
         private ScrollRect scrollRect;
 
         private IScrollViewCalculator calculator;
@@ -83,7 +85,8 @@ namespace ScrollViewExtension.Scripts.Adapter
             scrollRect.content.sizeDelta = calculator.CalculateContentSize();
             
             //bar位置設置
-            scrollRect.verticalNormalizedPosition = calculator.CalculateBarPosition(startIndex);
+            var barPosition = calculator.CalculateBarPosition(startIndex);
+            scrollRect.normalizedPosition = new Vector2(barPosition, barPosition);
             
             //padding設置
             var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.localPosition);
@@ -100,7 +103,7 @@ namespace ScrollViewExtension.Scripts.Adapter
             scrollRect.content.sizeDelta = calculator.CalculateContentSize();
             
             //bar位置設置
-            scrollRect.verticalNormalizedPosition = barPosition;
+            scrollRect.normalizedPosition = new Vector2(barPosition, barPosition);
             
             //表示する
             var range = dataHandler.GetRange(scrollRect.content.localPosition, count);
@@ -141,23 +144,18 @@ namespace ScrollViewExtension.Scripts.Adapter
             
             scrollRect = GetComponent<ScrollRect>();
             scrollRect.onValueChanged.AddListener(OnValueChanged);
-            
+
             viewEntity = ScrollViewEntity<TData>.CreateInstance(group.padding,
                 group.spacing,
                 GetComponent<RectTransform>().sizeDelta,
                 scrollRect.content.sizeDelta,
-                scrollRect.horizontal,
-                scrollRect.vertical);
-            
-            GroupLayoutEntity.CreateInstance(viewEntity.IsVertical(),
-                group.reverseArrangement,
-                group.childForceExpandWidth,
-                group.childForceExpandHeight,
-                group.childControlWidth,
-                group.childControlHeight,
-                group.childAlignment,
-                scrollRect.content.anchorMin,
-                scrollRect.content.anchorMax);
+                isVertical);
+
+            config = Resources.Load<GroupLayoutConfig>(scrollRect.horizontal
+                ? Const.HorizontalPath
+                : Const.VerticalPath);
+
+            SetLayoutWithConfig(config);
             
             var findIndex = FindIndex<TData>.CreateInstance();
             calculator = ScrollViewCalculator<TData>.CreateInstance(viewEntity, findIndex);
@@ -234,6 +232,21 @@ namespace ScrollViewExtension.Scripts.Adapter
             scrollRect.content.sizeDelta = calculator.CalculateContentSize();
 
             dataHandler.UpdatePositionsFromIndex(obj.Index + 1);
+        }
+
+        private void SetLayoutWithConfig(GroupLayoutConfig layoutConfig)
+        {
+            group.reverseArrangement = layoutConfig.reverseArrangement;
+            group.childAlignment = layoutConfig.childAlignment;
+            group.childForceExpandWidth = layoutConfig.childForceExpandWidth;
+            group.childForceExpandHeight = layoutConfig.childForceExpandHeight;
+            group.childControlWidth = layoutConfig.childControlWidth;
+            group.childControlHeight = layoutConfig.childControlHeight;
+            scrollRect.content.anchorMin = layoutConfig.minAnchor;
+            scrollRect.content.anchorMax = layoutConfig.maxAnchor;
+            scrollRect.content.pivot = layoutConfig.pivot;
+            scrollRect.horizontal = !isVertical;
+            scrollRect.vertical = isVertical;
         }
 
         /// <summary>

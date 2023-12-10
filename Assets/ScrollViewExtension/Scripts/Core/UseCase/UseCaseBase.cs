@@ -1,0 +1,18 @@
+using ScrollViewExtension.Scripts.Core.Entity.Interface;
+using ScrollViewExtension.Scripts.Core.Service.Interface;
+using ScrollViewExtension.Scripts.DTO;
+
+namespace ScrollViewExtension.Scripts.Core.UseCase
+{
+    public abstract class UseCaseBase<TData> where TData : ScrollItemBase, new()
+    {
+        protected readonly IScrollViewEntity<TData> viewEntity;
+        protected readonly IFindIndex<TData> findIndex;
+
+        protected UseCaseBase(IScrollViewEntity<TData> viewEntity, IFindIndex<TData> findIndex)
+        {
+            this.viewEntity = viewEntity;
+            this.findIndex = findIndex;
+        }
+    }
+}

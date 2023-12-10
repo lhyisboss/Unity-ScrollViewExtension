@@ -1,0 +1,19 @@
+{
+    "name": "DynamicScrollView.UseCase",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f35e699fa62201a49adc3a040573af6c",
+        "GUID:63c3643608a7378429a009acad15f650",
+        "GUID:5cc95977442e66847b1137d4a84da79f",
+        "GUID:4d7f1e455863ada42b849af7b66e8c57"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
