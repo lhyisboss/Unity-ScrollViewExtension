@@ -280,7 +280,7 @@ namespace ScrollViewExtension.Scripts.Core.Entity
             SetViewLength = viewLength;
             ContentSize = contentSize;
             Spacing = spacing;
-            DefaultPadding = new RectOffset(defaultPadding.left, defaultPadding.right, defaultPadding.top, defaultPadding.bottom);
+            DefaultPadding = defaultPadding;
             instanceCount = 0;
         }
     }

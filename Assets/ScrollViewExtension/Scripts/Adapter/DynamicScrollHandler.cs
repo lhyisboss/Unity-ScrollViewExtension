@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ScrollViewExtension.Scripts.Common;
 using ScrollViewExtension.Scripts.Configuration;
 using ScrollViewExtension.Scripts.Core.Entity;
@@ -62,12 +63,19 @@ namespace ScrollViewExtension.Scripts.Adapter
         
         private List<TItem> list;
 
+        private RectOffset defaultPadding;
+        
         private Vector4 lastPadding;
 
         private bool isInitialized;
 
         public TItem ItemPrefab => itemPrefab;
 
+        /// <summary>
+        /// データの数が変更なしなら、このまま呼んでいいですが、
+        /// 変更あった場合はresethandlerを先に呼んで再初期化してください。
+        /// </summary>
+        /// <param name="startIndex"></param>
         public void Show(int startIndex = 0)
         {
             //item生成
@@ -91,6 +99,8 @@ namespace ScrollViewExtension.Scripts.Adapter
             //padding設置
             var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.localPosition);
             UpdatePadding(v4);
+            
+            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
         }
 
         public void Show(float barPosition)
@@ -115,6 +125,8 @@ namespace ScrollViewExtension.Scripts.Adapter
             //padding設置
             var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.localPosition);
             UpdatePadding(v4);
+            
+            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
         }
 
         public void OnValueChanged(Vector2 pos)
@@ -145,7 +157,9 @@ namespace ScrollViewExtension.Scripts.Adapter
             scrollRect = GetComponent<ScrollRect>();
             scrollRect.onValueChanged.AddListener(OnValueChanged);
 
-            viewEntity = ScrollViewEntity<TData>.CreateInstance(group.padding,
+            defaultPadding = new RectOffset(group.padding.left, group.padding.right, group.padding.top, group.padding.bottom);
+            
+            viewEntity = ScrollViewEntity<TData>.CreateInstance(defaultPadding,
                 group.spacing,
                 GetComponent<RectTransform>().sizeDelta,
                 scrollRect.content.sizeDelta,
@@ -170,6 +184,8 @@ namespace ScrollViewExtension.Scripts.Adapter
         public void ResetHandler()
         {
             if(!isInitialized) return;
+
+            group.padding = defaultPadding;
             
             list.ForEach(x => Destroy(x.gameObject));
             list.Clear();
@@ -213,6 +229,9 @@ namespace ScrollViewExtension.Scripts.Adapter
             {
                 throw  new ArgumentException("number of instances need greater than 0");
             }
+
+            if (list != null && list.Any())
+                return list;
 
             var items = new List<TItem>();
             

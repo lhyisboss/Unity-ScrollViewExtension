@@ -1,24 +1,48 @@
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace ScrollViewExtension.Scripts
 {
     /// <summary>
-    /// 二種類の初期化方法がございます
+    /// 二種類のデータを初期化する方法がございます
     /// </summary>
     public class TestClient : MonoBehaviour
     {
         [SerializeField] private DynamicScrollTest test;
         
+        [SerializeField] private TextMeshProUGUI indexText;
+
+        [SerializeField] private TextMeshProUGUI barText;
+        
+        private int nextIndex;
+
+        private float nextBar;
+        
         public void Show()
         {
             for (var i = 0; i < 501; i++)
             {
-                var item = test.CreateItem(new Vector2(50, 200));
+                var item = test.CreateItem(new Vector2(50, 50));
                 item.num = i;
             }
             
-            test.Show(0.4024f);
+            test.Show(297);
+            indexText.text = "next index: " + nextIndex;
+            barText.text = "next bar: " + nextBar;
+        }
+
+        public void OnClickIndexButton()
+        {
+            test.Show(nextIndex);
+            nextIndex = Random.Range(0, 500);
+            indexText.text = "next index: " + nextIndex;
+        }
+
+        public void OnClickBarButton()
+        {
+            test.Show(nextBar);
+            nextBar = Random.Range(0f, 1f);
+            barText.text = "next bar: " + nextBar;
         }
 
         private void Start()
