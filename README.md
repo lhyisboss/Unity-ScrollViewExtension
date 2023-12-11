@@ -7,7 +7,8 @@ A simple extension based on VerticalOrHorizontalLayoutGroup and GridLayoutGroup.
 ![Alt text for the GIF](horizontal.gif)  
 
 demoは501個のデータを表示する例です。  
-index,bar位置を指定して表示することもできますが、gifが大きくなるので、割愛させていただきます。
+index,bar位置を指定して表示することもできます。  
+途中サイズ変更も可能です。
 
 ## 説明
 verticalやhorizontal layout groupを経由で生成数を最適化の手段の一つです。
@@ -26,5 +27,5 @@ verticalやhorizontal layout groupを経由で生成数を最適化の手段の�
 GridLayout経由の拡張も今作成中で、次のバージョンでまとめてアップします。
 
 ## 余談
-自分は今Unity側の仕事探しています。もし、貴社今人手足りないなら、是非考えてください。  
+自分は今Unity側の仕事探しています。もし、貴社ちょうど今人手足りないなら、是非検討をお願いします。  
 性格としては穏やかで、ゲーム作りに熱心です。
