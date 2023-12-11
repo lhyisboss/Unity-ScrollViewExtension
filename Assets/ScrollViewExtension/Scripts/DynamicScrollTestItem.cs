@@ -1,5 +1,5 @@
 using ScrollViewExtension.Scripts.Adapter;
-using ScrollViewExtension.Scripts.DTO;
+using ScrollViewExtension.Scripts.Adapter.DTO;
 using TMPro;
 using UnityEngine;
 

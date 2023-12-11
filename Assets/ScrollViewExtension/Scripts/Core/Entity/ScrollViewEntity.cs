@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ScrollViewExtension.Scripts.Adapter.DTO;
 using ScrollViewExtension.Scripts.Core.Entity.Interface;
-using ScrollViewExtension.Scripts.DTO;
 using UnityEngine;
 
 namespace ScrollViewExtension.Scripts.Core.Entity

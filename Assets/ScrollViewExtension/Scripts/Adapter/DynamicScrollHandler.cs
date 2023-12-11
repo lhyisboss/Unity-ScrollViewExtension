@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ScrollViewExtension.Scripts.Adapter.DTO;
 using ScrollViewExtension.Scripts.Common;
 using ScrollViewExtension.Scripts.Configuration;
 using ScrollViewExtension.Scripts.Core.Entity;
@@ -30,7 +31,6 @@ using ScrollViewExtension.Scripts.Core.Entity.Interface;
 using ScrollViewExtension.Scripts.Core.Service;
 using ScrollViewExtension.Scripts.Core.UseCase;
 using ScrollViewExtension.Scripts.Core.UseCase.Interface;
-using ScrollViewExtension.Scripts.DTO;
 using UnityEngine;
 using UnityEngine.UI;
 

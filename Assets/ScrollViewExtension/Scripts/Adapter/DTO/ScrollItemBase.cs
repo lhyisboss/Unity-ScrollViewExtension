@@ -3,7 +3,7 @@ using ScrollViewExtension.Scripts.Common;
 using UnityEngine;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DynamicScrollView.Entity")]
-namespace ScrollViewExtension.Scripts.DTO
+namespace ScrollViewExtension.Scripts.Adapter.DTO
 {
     public abstract class ScrollItemBase : IDisposable
     {

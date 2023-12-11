@@ -1,7 +1,7 @@
 using System;
 using NUnit.Framework;
+using ScrollViewExtension.Scripts.Adapter.DTO;
 using ScrollViewExtension.Scripts.Core.Entity;
-using ScrollViewExtension.Scripts.DTO;
 using UnityEngine;
 
 namespace ScrollViewExtension.Scripts.Tests

@@ -1,6 +1,6 @@
+using ScrollViewExtension.Scripts.Adapter.DTO;
 using ScrollViewExtension.Scripts.Core.Entity.Interface;
 using ScrollViewExtension.Scripts.Core.Service.Interface;
-using ScrollViewExtension.Scripts.DTO;
 
 namespace ScrollViewExtension.Scripts.Core.UseCase
 {
