@@ -2,9 +2,9 @@
 A simple extension based on VerticalOrHorizontalLayoutGroup and GridLayoutGroup.
 
 ## Verticalとhorizontal方向のDemo
-![Alt text for the GIF](vertical.gif)  
+![Alt text for the GIF](/Img/vertical.gif)  
 
-![Alt text for the GIF](horizontal.gif)  
+![Alt text for the GIF](/Img/horizontal.gif)  
 
 demoは501個のデータを表示する例です。  
 index,bar位置を指定して表示することもできます。  
@@ -20,6 +20,8 @@ verticalやhorizontal layout groupを経由で生成数を最適化の手段の�
 ④barの位置を指定して表示することが可能です。  
 
 プロジェクトの構成：  
+<img src="./Img/Unity-ScrollViewOptimized.png" width="50%" height="50%">
+
 フォルダの構成から見て分かると思いますが、典型的なClean Architectureです。
 
 ※：  
