@@ -1,10 +1,13 @@
 # Unity-ScrollVeiwExtension
 A simple extension based on VerticalOrHorizontalLayoutGroup and GridLayoutGroup.
 
-## Vertical方向のDemo
-![Alt text for the GIF](vertical.gif)
+## Verticalとhorizontal方向のDemo
+![Alt text for the GIF](vertical.gif)  
 
-demoは501個のデータを表示する例です。
+![Alt text for the GIF](horizontal.gif)  
+
+demoは501個のデータを表示する例です。  
+index,bar位置を指定して表示することもできますが、gifが大きくなるので、割愛させていただきます。
 
 ## 説明
 verticalやhorizontal layout groupを経由で生成数を最適化の手段の一つです。
@@ -20,8 +23,8 @@ verticalやhorizontal layout groupを経由で生成数を最適化の手段の�
 
 ※：  
 自分は最近あったケースは以上の機能で大体足りますが、もし他に何か入って欲しい機能があったら、全然追加しますので、是非知らせください。  
-また、horizontal方向はテストしていないので、次のバージョンでテストや使用例を追加する予定です。GridLayout経由の拡張も今作成中で、次のバージョンでまとめてアップします。
+GridLayout経由の拡張も今作成中で、次のバージョンでまとめてアップします。
 
 ## 余談
-自分は今Unity側の仕事探しています。もし、貴社今人手足りないなら、是非連絡ください。  
+自分は今Unity側の仕事探しています。もし、貴社今人手足りないなら、是非考えてください。  
 性格としては穏やかで、ゲーム作りに熱心です。
