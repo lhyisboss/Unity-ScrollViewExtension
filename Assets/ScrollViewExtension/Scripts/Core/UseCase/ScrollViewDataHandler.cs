@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ScrollViewExtension.Scripts.Core.UseCase
 {
-    public class ScrollViewDataHandler<TData> : UseCaseBase<TData>, IScrollViewDataHandler<TData> where TData : ScrollItemBase, new()
+    internal class ScrollViewDataHandler<TData> : UseCaseBase<TData>, IScrollViewDataHandler<TData> where TData : ScrollItemBase, new()
     {
         private static ScrollViewDataHandler<TData> instance;
 

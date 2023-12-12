@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ScrollViewExtension.Scripts.Core.Entity.Interface
 {
-    public interface IScrollViewEntity<TData> : IDisposable where TData : new()
+    internal interface IScrollViewEntity<TData> : IDisposable where TData : new()
     {
         /// <summary>
         /// 現在のビューの長さを取得します。

@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using ScrollViewExtension.Scripts.Adapter.DTO;
 using ScrollViewExtension.Scripts.Common;
 using ScrollViewExtension.Scripts.Configuration;
@@ -34,6 +35,7 @@ using ScrollViewExtension.Scripts.Core.UseCase.Interface;
 using UnityEngine;
 using UnityEngine.UI;
 
+[assembly: InternalsVisibleTo("Tests")]
 namespace ScrollViewExtension.Scripts.Adapter
 {
     /// <summary>

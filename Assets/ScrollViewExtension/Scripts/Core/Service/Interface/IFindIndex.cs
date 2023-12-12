@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ScrollViewExtension.Scripts.Core.Service.Interface
 {
-    public interface IFindIndex<TData> : IDisposable where TData : ScrollItemBase, new()
+    internal interface IFindIndex<TData> : IDisposable where TData : ScrollItemBase, new()
     {
         int ByPosition(Vector3 position, IScrollViewEntity<TData> viewEntity);
     }

@@ -1,17 +1,15 @@
 {
-    "name": "DynamicScrollView.Service",
+    "name": "DynamicScrollView",
     "rootNamespace": "",
     "references": [
-        "GUID:f35e699fa62201a49adc3a040573af6c",
-        "GUID:4d7f1e455863ada42b849af7b66e8c57",
-        "GUID:5cc95977442e66847b1137d4a84da79f"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

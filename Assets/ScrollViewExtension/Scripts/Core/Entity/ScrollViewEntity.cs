@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ScrollViewExtension.Scripts.Core.Entity
 {
-    public class ScrollViewEntity<TData> : IScrollViewEntity<TData> where TData : ScrollItemBase, new()
+    internal class ScrollViewEntity<TData> : IScrollViewEntity<TData> where TData : ScrollItemBase, new()
     {
         private static ScrollViewEntity<TData> instance;
         

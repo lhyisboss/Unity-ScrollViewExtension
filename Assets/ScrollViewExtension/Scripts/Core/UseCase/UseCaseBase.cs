@@ -4,7 +4,7 @@ using ScrollViewExtension.Scripts.Core.Service.Interface;
 
 namespace ScrollViewExtension.Scripts.Core.UseCase
 {
-    public abstract class UseCaseBase<TData> where TData : ScrollItemBase, new()
+    internal abstract class UseCaseBase<TData> where TData : ScrollItemBase, new()
     {
         protected readonly IScrollViewEntity<TData> viewEntity;
         protected readonly IFindIndex<TData> findIndex;

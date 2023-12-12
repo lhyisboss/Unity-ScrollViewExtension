@@ -6,7 +6,7 @@ namespace ScrollViewExtension.Scripts.Core.UseCase.Interface
     /// <summary>
     /// スクロールビューの計算を行うインターフェース
     /// </summary>
-    public interface IScrollViewCalculator : IDisposable
+    internal interface IScrollViewCalculator : IDisposable
     {
         /// <summary>
         /// インスタンスの数を計算

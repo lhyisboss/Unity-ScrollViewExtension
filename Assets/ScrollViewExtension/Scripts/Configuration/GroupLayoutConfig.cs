@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ScrollViewExtension.Scripts.Configuration
 {
     [CreateAssetMenu(fileName = "GroupLayoutConfig", menuName = "Configuration/GroupLayoutConfig")]
-    public class GroupLayoutConfig : ScriptableObject
+    internal class GroupLayoutConfig : ScriptableObject
     {
         public bool reverseArrangement;
         public bool childForceExpandWidth;

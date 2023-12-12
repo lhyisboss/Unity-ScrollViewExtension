@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ScrollViewExtension.Scripts.Common
 {
-    public static class Vector4Extensions
+    internal static class Vector4Extensions
     {
         public static bool GreaterThan(this Vector4 a, Vector4 b)
         {

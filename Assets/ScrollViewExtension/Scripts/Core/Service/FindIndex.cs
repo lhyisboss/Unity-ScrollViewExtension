@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ScrollViewExtension.Scripts.Core.Service
 {
-    public class FindIndex<TData> : IFindIndex<TData> where TData : ScrollItemBase, new()
+    internal class FindIndex<TData> : IFindIndex<TData> where TData : ScrollItemBase, new()
     {
         private static FindIndex<TData> instance;
 

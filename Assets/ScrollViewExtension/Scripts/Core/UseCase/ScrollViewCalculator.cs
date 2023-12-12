@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ScrollViewExtension.Scripts.Core.UseCase
 {
-    public class ScrollViewCalculator<TData> : UseCaseBase<TData>, IScrollViewCalculator where TData : ScrollItemBase, new()
+    internal class ScrollViewCalculator<TData> : UseCaseBase<TData>, IScrollViewCalculator where TData : ScrollItemBase, new()
     {
         private const float Epsilon = Const.Epsilon;
         

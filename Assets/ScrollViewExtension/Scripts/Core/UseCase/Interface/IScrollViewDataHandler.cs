@@ -8,7 +8,7 @@ namespace ScrollViewExtension.Scripts.Core.UseCase.Interface
     /// スクロールビューのデータハンドラのインターフェースです。
     /// </summary>
     /// <typeparam name="TData">データの型。</typeparam>
-    public interface IScrollViewDataHandler<TData> : IDisposable
+    internal interface IScrollViewDataHandler<TData> : IDisposable
     {
         /// <summary>
         /// アイテムを作成します。
