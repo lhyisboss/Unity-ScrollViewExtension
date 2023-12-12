@@ -22,10 +22,16 @@ verticalやhorizontal layout groupを経由で生成数を最適化の手段の�
 プロジェクトの構成：  
 <img src="./Img/Unity-ScrollViewOptimized.png" width="50%" height="50%">
 
-フォルダの構成から見て分かると思いますが、典型的なClean Architectureです。
+Clean Architectureを原則して構成されました。  
+
+タイプ依頼:  
+<img src="./Img/type dependency digram.png" width="80%" height="80%">  
+
+図の通り、一方通行になります。
 
 ※：  
-自分は最近あったケースは以上の機能で大体足りますが、もし他に何か入って欲しい機能があったら、全然追加しますので、是非知らせください。  
+自分は最近あったケースは以上の機能で大体足りますが、もし他に何か入って欲しい機能があったら、  
+全然追加しますので、是非知らせください。もしくはforkしてPR出していただいても大丈夫です。  
 GridLayout経由の拡張も今作成中で、次のバージョンでまとめてアップします。
 
 ## 余談
