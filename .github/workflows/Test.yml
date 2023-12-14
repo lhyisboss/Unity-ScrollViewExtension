@@ -11,11 +11,7 @@ jobs:
       matrix:
         testMode:
           - editmode
-    permissions:
-      contents: write
-      pull-requests: write
-      repository-projects: write
-      actions: write
+    permissions: write-all
     steps:
       - uses: actions/checkout@v4
         with:
