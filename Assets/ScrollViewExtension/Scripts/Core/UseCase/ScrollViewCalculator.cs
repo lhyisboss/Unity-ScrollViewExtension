@@ -125,7 +125,7 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
             if (lastCount != count || lastIndex != index)
             {
                 // 最大オフセットを更新します
-                maxOffset = contentLength - viewEntity.GetContentLength(count, index);
+                maxOffset = contentLength - viewEntity.GetContentLength(count, viewEntity.Data[^count].Index);
                 lastIndex = index;
                 lastCount = count;
             }
