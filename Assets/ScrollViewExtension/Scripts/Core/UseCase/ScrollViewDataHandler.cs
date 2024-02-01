@@ -29,6 +29,9 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
 
         public List<TData> GetRange(int index, int count)
         {
+            if (viewEntity.Data.Count <= 0 || viewEntity.Data is null)
+                return null;
+            
             // データのカウントを超えた場合、残りのアイテム全てを取得します
             return index + count > viewEntity.Data.Count
                 ? viewEntity.GetRange(viewEntity.Data.Count - count, count)

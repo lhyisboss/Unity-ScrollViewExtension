@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -20,15 +22,47 @@ namespace ScrollViewExtension.Scripts
         
         public void Show()
         {
-            for (var i = 0; i < 501; i++)
+            // 一気に20個追加の場合(20じゃなくても1個1個追加するのもできる)
+            // for (var i = 0; i < 1; i++)
+            // {
+            //     var item = test.CreateItem(new Vector2(50, 50));
+            //     item.num = i;
+            // }
+            //
+            // for (var i = 1; i < 2; i++)
+            // {
+            //     var item = test.CreateItem(new Vector2(50, 80));
+            //     item.num = i;
+            // }
+            
+            test.Show();
+            indexText.text = "next index: " + nextIndex;
+            barText.text = "next bar: " + nextBar;
+        }
+        
+        /// <summary>
+        /// 複数のアイテムを追加する例
+        /// </summary>
+        public void OnClickAddButton()
+        {
+            var items = new List<int>() {1, 2, 4};
+
+            foreach (var i in items)
             {
-                var item = test.CreateItem(new Vector2(50, 50));
+                var item = test.CreateItem(new Vector2(50, 40));
                 item.num = i;
             }
             
-            test.Show(297);
-            indexText.text = "next index: " + nextIndex;
-            barText.text = "next bar: " + nextBar;
+            //今のBar位置は一番下にいる場合は一番下を表示する、でないと今の位置のままで表示する
+            // if (test.GetScrollBarPos() == 0)
+            // { 
+            //     test.Show(0.0f);
+            // }
+            // else
+            // { 
+            //     test.Show();
+            // }
+            test.Show();
         }
 
         public void OnClickIndexButton()
@@ -47,6 +81,12 @@ namespace ScrollViewExtension.Scripts
 
         private void Start()
         {
+            StartCoroutine(InitAndShow());
+        }
+
+        private IEnumerator InitAndShow()
+        {
+            yield return null;
             test.Initialize();
             Show();
         }

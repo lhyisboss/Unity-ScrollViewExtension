@@ -13,9 +13,7 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
         private const float Epsilon = Const.Epsilon;
         
         private static ScrollViewCalculator<TData> instance;
-
-        private int lastIndex;
-        private int lastCount;
+        
         private float maxOffset;
 
         public static ScrollViewCalculator<TData> CreateInstance(IScrollViewEntity<TData> viewEntity, IFindIndex<TData> findIndex)
@@ -32,6 +30,8 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
 
         public Vector2 CalculateContentSize()
         {
+            if (viewEntity.Data.Count <= 0 || viewEntity.Data is null) return Vector2.zero;
+            
             var size = viewEntity.IsVertical
                 ? new Vector2(viewEntity.ContentSize.x, viewEntity.GetContentLength(viewEntity.Data.Count))
                 : new Vector2(viewEntity.GetContentLength(viewEntity.Data.Count), viewEntity.ContentSize.y);
@@ -121,14 +121,8 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
             // コンテンツの長さを計算します
             var contentLength = viewEntity.GetContentLength(viewEntity.Data.Count);
 
-            // 前回のカウントとインデックスが異なる場合、再計算します
-            if (lastCount != count || lastIndex != index)
-            {
-                // 最大オフセットを更新します
-                maxOffset = contentLength - viewEntity.GetContentLength(count, viewEntity.Data[^count].Index);
-                lastIndex = index;
-                lastCount = count;
-            }
+            // 最大オフセットを更新します
+            maxOffset = contentLength - viewEntity.GetContentLength(count, viewEntity.Data[^count].Index);
 
             // コンテンツの位置が負の場合は、0にリセットします
             contentPos = Mathf.Min(-contentPos.x, contentPos.y) < 0 ? Vector3.zero : contentPos;

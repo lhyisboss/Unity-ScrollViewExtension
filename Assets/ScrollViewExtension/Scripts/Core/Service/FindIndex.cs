@@ -54,7 +54,7 @@ namespace ScrollViewExtension.Scripts.Core.Service
             }
 
             // アイテムが見つからなかった場合
-            return -1;
+            return pos > 0 ? viewEntity.Data.Count - 1 : 0;
         }
 
         public void Dispose()

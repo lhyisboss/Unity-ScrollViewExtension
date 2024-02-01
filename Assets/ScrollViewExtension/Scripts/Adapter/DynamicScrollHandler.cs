@@ -2,7 +2,7 @@
  * ***********************************************
  *
  * 機能名: DynamicScrollView
- * バージョン: 0.2.1
+ * バージョン: 0.2.3
  * 作成日: 2023-12-06
  * 作者: lhyisboss
  * 言語: C#
@@ -17,12 +17,25 @@
  * UseCaseはInputを受け取り、ServiceやEntityとやり取りし、Outputを生成します。
  * Entityは核となるロジック、検証やデータを管理するクラスです。
  *
+ * 配置流れ:
+ * 1.このクラスを継承して具体的なTDataとTItemを指定する
+ * 2.継承したクラスを目標とするScrollViewオブジェクトにアタッチしてフィールドを設定する
+ * 3.ScrollViewのContentにVerticalLayoutGroupもしくはHorizontalLayoutGroupをアタッチする(ContentSizeFitterなし)
+ *
+ * 使用流れ(二つに分ける):
+ * 1.
+ * 事前にlistを用意してInitializeの時にlistを渡してShowを呼ぶだけ
+ *
+ * 2.
+ * Initializeをパラメータなしで実行し、その後CreateItemを呼んで新しいアイテムを追加して最後はShowを呼ぶ
+ *
+ * ※使用例はTestClient.cs、DynamicScrollViewExample.unityにあるので、ご参考ください
+ *
  * ***********************************************
  */
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using ScrollViewExtension.Scripts.Adapter.DTO;
 using ScrollViewExtension.Scripts.Common;
@@ -78,8 +91,14 @@ namespace ScrollViewExtension.Scripts.Adapter
         /// 変更あった場合はresethandlerを先に呼んで再初期化してください。
         /// </summary>
         /// <param name="startIndex"></param>
-        public void Show(int startIndex = 0)
+        public void Show(int startIndex)
         {
+            if (IsItemDataListNull())
+            {
+                UpdateContentSize();
+                return;
+            }
+            
             //item生成
             var count = calculator.CalculateInstanceNumber();
             list = GenerateItems(count);
@@ -91,15 +110,14 @@ namespace ScrollViewExtension.Scripts.Adapter
                 list[i].Show(range[i]);
             }
             
-            //contentサイズ設置
-            scrollRect.content.sizeDelta = calculator.CalculateContentSize();
+            UpdateContentSize();
             
             //bar位置設置
             var barPosition = calculator.CalculateBarPosition(startIndex);
             scrollRect.normalizedPosition = new Vector2(barPosition, barPosition);
             
             //padding設置
-            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.localPosition);
+            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition);
             UpdatePadding(v4);
             
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
@@ -107,25 +125,58 @@ namespace ScrollViewExtension.Scripts.Adapter
 
         public void Show(float barPosition)
         {
+            if (IsItemDataListNull())
+            {
+                UpdateContentSize();
+                return;
+            }
+            
             //item生成
             var count = calculator.CalculateInstanceNumber();
             list = GenerateItems(count);
             
-            //contentサイズ設置
-            scrollRect.content.sizeDelta = calculator.CalculateContentSize();
+            UpdateContentSize();
             
             //bar位置設置
             scrollRect.normalizedPosition = new Vector2(barPosition, barPosition);
             
             //表示する
-            var range = dataHandler.GetRange(scrollRect.content.localPosition, count);
+            var range = dataHandler.GetRange(scrollRect.content.anchoredPosition, count);
             for (var i = 0; i < range.Count; i++)
             {
                 list[i].Show(range[i]);
             }
             
             //padding設置
-            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.localPosition);
+            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition);
+            UpdatePadding(v4);
+            
+            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
+        }
+        
+        public void Show()
+        {
+            if (IsItemDataListNull())
+            {
+                UpdateContentSize();
+                return;
+            }
+            
+            //item生成
+            var count = calculator.CalculateInstanceNumber();
+            list = GenerateItems(count);
+            
+            UpdateContentSize();
+            
+            //表示する
+            var range = dataHandler.GetRange(scrollRect.content.anchoredPosition, count);
+            for (var i = 0; i < range.Count; i++)
+            {
+                list[i].Show(range[i]);
+            }
+            
+            //padding設置
+            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition);
             UpdatePadding(v4);
             
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
@@ -133,25 +184,72 @@ namespace ScrollViewExtension.Scripts.Adapter
 
         public void OnValueChanged(Vector2 pos)
         {
-            if(!isInitialized) return;
+            if (!isInitialized || list == null || IsItemDataListNull())
+            {
+                scrollRect.velocity = Vector2.zero; //OnValueChangedはなるべく呼ばないためにゼロにした
+                
+                if (isVertical)
+                    scrollRect.verticalScrollbar.size = 1; //barがAutohideになっていない場合の対策
+                else
+                    scrollRect.horizontalScrollbar.size = 1;
+                
+                return;
+            }
 
             //padding設置
-            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.localPosition);
+            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition);
             
             var count = calculator.CalculateRolling(lastPadding, v4, list[0].Data.Index);
             
             UpdatePadding(v4);
             
             StartRoll(count);
+            
+            list.ForEach(item => item.CheckMovement());
         }
         
+        /// <summary>
+        /// 新しいアイテムを作る、作ったアイテムがリストの一番下に追加する
+        /// <para>動的新しいアイテムを追加した場合は必ず<see cref="UpdateContentSize"/>が呼ばれる必要がある</para>
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns></returns>
         public TData CreateItem(Vector2 size)
         {
             var item = dataHandler.CreateItem(size);
             item.OnItemSizeChanged += OnItemSizeChanged;
             return item;
         }
+        
+        private bool IsItemDataListNull()
+        {
+            return dataHandler.GetRange(0, 1) is null;
+        }
 
+        /// <summary>
+        /// 現在のitemリストを基にContentSizeを更新する
+        /// </summary>
+        public void UpdateContentSize()
+        {
+            //contentサイズ設置
+            scrollRect.content.sizeDelta = calculator.CalculateContentSize();
+        }
+
+        /// <summary>
+        /// 今の該当する方向のBar位置取得する
+        /// </summary>
+        /// <returns></returns>
+        public float GetScrollBarPos()
+        {
+            return isVertical ? scrollRect.normalizedPosition.y : scrollRect.normalizedPosition.x;
+        }
+
+        /// <summary>
+        /// 基本は一回だけ呼べば行ける
+        /// <para>アイテムリストが大きいな変更があった場合は<see cref="ResetHandler"/>して再初期化する必要がある(現段階)</para>
+        /// それ以外は例えばアイテムリストの一番下に新しいアイテムを追加したい場合は<see cref="CreateItem"/>呼べば行ける
+        /// </summary>
+        /// <param name="data"></param>
         public void Initialize(List<TData> data = null)
         {
             if(isInitialized) return;
@@ -161,9 +259,11 @@ namespace ScrollViewExtension.Scripts.Adapter
 
             defaultPadding = new RectOffset(group.padding.left, group.padding.right, group.padding.top, group.padding.bottom);
             
+            var rect = scrollRect.viewport.rect;
+            var viewLength = new Vector2(rect.width, rect.height);
             viewEntity = ScrollViewEntity<TData>.CreateInstance(defaultPadding,
                 group.spacing,
-                GetComponent<RectTransform>().sizeDelta,
+                viewLength,
                 scrollRect.content.sizeDelta,
                 isVertical);
 
@@ -193,6 +293,7 @@ namespace ScrollViewExtension.Scripts.Adapter
             list.Clear();
             
             scrollRect.onValueChanged.RemoveListener(OnValueChanged);
+            scrollRect.content.sizeDelta = Vector2.zero;
             
             calculator.Dispose();
             dataHandler.Dispose();
@@ -225,27 +326,31 @@ namespace ScrollViewExtension.Scripts.Adapter
             group.padding.right = Mathf.RoundToInt(v4.w);
         }
 
-        private List<TItem> GenerateItems(int count)
+        private List<TItem> GenerateItems(int maxNumber)
         {
-            if (count <= 0)
+            if (maxNumber <= 0)
             {
                 throw  new ArgumentException("number of instances need greater than 0");
             }
-
-            if (list != null && list.Any())
-                return list;
-
-            var items = new List<TItem>();
             
-            for (var i = 0; i < count; i++)
+            // listがnullの場合は初期化する
+            list ??= new List<TItem>();
+            
+            // listの数がmaxNumberに達していた場合は直接listを返す
+            if (list.Count >= maxNumber)
             {
-                var item = Instantiate(ItemPrefab, scrollRect.content);
-                items.Add(item);
-                
-                item.Initialize();
+                return list;
             }
             
-            return  items;
+            // listの数がmaxNumberに達するまで新しいitemsを生成し、listに追加する
+            for (var i = list.Count; i < maxNumber; i++)
+            {
+                var item = Instantiate(ItemPrefab, scrollRect.content);
+                item.Initialize();
+                list.Add(item);
+            }
+            
+            return list;
         }
         
         private void OnItemSizeChanged(ScrollItemBase obj)

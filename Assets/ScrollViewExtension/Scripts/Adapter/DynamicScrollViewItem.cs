@@ -41,7 +41,7 @@ namespace ScrollViewExtension.Scripts.Adapter
             canCheckSize = true;
         }
 
-        public void Update()
+        public void CheckMovement()
         {
             if(Data == null || !canCheckSize) return;
 
