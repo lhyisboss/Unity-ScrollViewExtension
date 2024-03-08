@@ -87,7 +87,17 @@ namespace ScrollViewExtension.Scripts.Common
 
         public T Get()
         {
-            return objects.Count > 0 ? objects.Dequeue() : factory.Create();
+            T dequeue;
+            if (objects.Count > 0)
+            {
+                dequeue = objects.Dequeue();
+                factory.Initialize(dequeue);
+                return dequeue;
+            }
+
+            dequeue = factory.Create();
+            factory.Initialize(dequeue);
+            return dequeue;
         }
 
         public void Return(T item)

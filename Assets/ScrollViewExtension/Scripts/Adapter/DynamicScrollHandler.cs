@@ -116,10 +116,7 @@ namespace ScrollViewExtension.Scripts.Adapter
             
             //表示する
             var range = dataHandler.GetRange(startIndex, count);
-            for (var i = 0; i < range.Count; i++)
-            {
-                list[i].UpdateData(range[i]);
-            }
+            UpdateListData(range);
             
             UpdateContentSize();
             
@@ -153,10 +150,7 @@ namespace ScrollViewExtension.Scripts.Adapter
             
             //表示する
             var range = dataHandler.GetRange(scrollRect.content.anchoredPosition, count);
-            for (var i = 0; i < range.Count; i++)
-            {
-                list[i].UpdateData(range[i]);
-            }
+            UpdateListData(range);
             
             //padding設置
             var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition);
@@ -176,8 +170,8 @@ namespace ScrollViewExtension.Scripts.Adapter
             //item生成
             var count = calculator.CalculateInstanceNumber(needPreLoadNode);
             var needUpData = list.Count < count;
-            if(needUpData)
-                list = pool.Get(count).ToList();
+            if (needUpData)
+                UpdateListToRequiredCount(count);
             
             UpdateContentSize();
 
@@ -185,10 +179,7 @@ namespace ScrollViewExtension.Scripts.Adapter
             {
                 //表示する
                 var range = dataHandler.GetRange(scrollRect.content.anchoredPosition, count);
-                for (var i = 0; i < range.Count; i++)
-                {
-                    list[i].UpdateData(range[i]);
-                }
+                UpdateListData(range);
                 
                 //padding設置
                 var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition);
@@ -198,10 +189,7 @@ namespace ScrollViewExtension.Scripts.Adapter
             {
                 //表示する
                 var range = dataHandler.GetRange(list[0].Data.Index, count);
-                for (var i = 0; i < range.Count; i++)
-                {
-                    list[i].UpdateData(range[i]);
-                }
+                UpdateListData(range);
             }
             
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
@@ -242,11 +230,6 @@ namespace ScrollViewExtension.Scripts.Adapter
             var item = dataHandler.CreateItem(size);
             item.OnItemSizeChanged += OnItemSizeChanged;
             return item;
-        }
-        
-        private bool IsItemDataListNull()
-        {
-            return dataHandler.GetRange(0, 1) is null;
         }
 
         /// <summary>
@@ -346,6 +329,28 @@ namespace ScrollViewExtension.Scripts.Adapter
             });
 
             dataHandler.SetScrollItems(shell);
+        }
+        
+        private bool IsItemDataListNull()
+        {
+            return dataHandler.GetRange(0, 1) is null;
+        }
+        
+        private void UpdateListToRequiredCount(int count)
+        {
+            var diff = count - list.Count;
+            for (var i = 0; i < diff; i++)
+            {
+                list.Add(pool.Get());
+            }
+        }
+
+        private void UpdateListData(IReadOnlyList<TData> range)
+        {
+            for (var i = 0; i < range.Count; i++)
+            {
+                list[i].UpdateData(range[i]);
+            }
         }
 
         private void UpdatePadding(Vector4 v4)
