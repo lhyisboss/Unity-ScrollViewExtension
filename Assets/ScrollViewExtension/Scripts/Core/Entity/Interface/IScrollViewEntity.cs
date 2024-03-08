@@ -72,8 +72,9 @@ namespace ScrollViewExtension.Scripts.Core.Entity.Interface
         /// </summary>
         /// <param name="count">アイテムの数</param>
         /// <param name="index">開始インデックス（デフォルトは0）</param>
+        /// <param name="includePadding"></param>
         /// <returns>コンテンツの長さ</returns>
-        float GetContentLength(int count, int index = 0);
+        float GetContentLength(int count, int index = 0, bool includePadding = true);
 
         /// <summary>
         /// アイテムのサイズを取得します。

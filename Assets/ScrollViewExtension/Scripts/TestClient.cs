@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -19,6 +18,8 @@ namespace ScrollViewExtension.Scripts
         private int nextIndex;
 
         private float nextBar;
+
+        private int count;
         
         public void Show()
         {
@@ -45,13 +46,9 @@ namespace ScrollViewExtension.Scripts
         /// </summary>
         public void OnClickAddButton()
         {
-            var items = new List<int>() {1, 2, 4};
-
-            foreach (var i in items)
-            {
-                var item = test.CreateItem(new Vector2(50, 40));
-                item.num = i;
-            }
+            var item = test.CreateItem(new Vector2(50, 40));
+            item.num = count;
+            count++;
             
             //今のBar位置は一番下にいる場合は一番下を表示する、でないと今の位置のままで表示する
             // if (test.GetScrollBarPos() == 0)
@@ -68,7 +65,7 @@ namespace ScrollViewExtension.Scripts
         public void OnClickIndexButton()
         {
             test.Show(nextIndex);
-            nextIndex = Random.Range(0, 500);
+            nextIndex = Random.Range(0, 20);
             indexText.text = "next index: " + nextIndex;
         }
 

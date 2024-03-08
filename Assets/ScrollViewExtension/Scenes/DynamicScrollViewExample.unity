@@ -349,6 +349,8 @@ MonoBehaviour:
   group: {fileID: 1418792124}
   itemPrefab: {fileID: 3180753195245806249, guid: 0cefa93a4c073ba4f8eeed64113f4ced, type: 3}
   isVertical: 1
+  needRefreshView: 1
+  needPreLoadNode: 1
 --- !u!114 &133973935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1705,6 +1707,8 @@ MonoBehaviour:
   group: {fileID: 217181776}
   itemPrefab: {fileID: 1826663048721902089, guid: 5c457369341e7e843bd744ce81717862, type: 3}
   isVertical: 0
+  needRefreshView: 0
+  needPreLoadNode: 0
 --- !u!114 &1217040892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2324,7 +2328,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
+    m_Top: 10
     m_Bottom: 0
   m_ChildAlignment: 0
   m_Spacing: 0

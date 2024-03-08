@@ -27,10 +27,25 @@ namespace ScrollViewExtension.Scripts.Adapter
         }
 
         /// <summary>
-        /// 必ずbase.showを読んでください。
+        /// ノードを表示する
         /// </summary>
         /// <param name="data"></param>
-        public virtual void Show(TData data)
+        protected virtual void Show(TData data)
+        {
+        }
+
+        /// <summary>
+        /// ScrollViewのevent関数はサイズ変更の際に必ず呼ぶには限らないので、とりあえずUpdateにした
+        /// </summary>
+        public void Update()
+        {
+            if(Data == null || !canCheckSize) return;
+
+            if(!IsSizeEqual(Data))
+                Data.Size = RectTransform.sizeDelta;
+        }
+
+        internal void UpdateData(TData data, bool needSkip = false)
         {
             canCheckSize = false;
             
@@ -39,14 +54,9 @@ namespace ScrollViewExtension.Scripts.Adapter
             RectTransform.pivot = data.Pivot;
             
             canCheckSize = true;
-        }
-
-        public void CheckMovement()
-        {
-            if(Data == null || !canCheckSize) return;
-
-            if(!IsSizeEqual(Data))
-                Data.Size = RectTransform.sizeDelta;
+            
+            if(!needSkip)
+                Show(data);
         }
 
         private bool IsSizeEqual(TData data)

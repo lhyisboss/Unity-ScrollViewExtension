@@ -34,15 +34,15 @@ namespace ScrollViewExtension.Scripts.Tests
             calculator = ScrollViewCalculator<TestScrollItem>.CreateInstance(viewEntity, findIndex);
 
             viewEntity.CreateItem(new Vector2(200, 50), new Vector2(0, 0));
-            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(205, -55));
-            viewEntity.CreateItem(new Vector2(200, 100), new Vector2(415, -115));
-            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(625, -225));
-            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(835, -285));
-            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(1045, -345));
-            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(1255, -405));
-            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(1465, -465));
-            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(1675, -525));
-            viewEntity.CreateItem(new Vector2(200, 50.55f), new Vector2(1885, -585));
+            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(205, -65));
+            viewEntity.CreateItem(new Vector2(200, 100), new Vector2(415, -125));
+            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(625, -235));
+            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(835, -295));
+            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(1045, -355));
+            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(1255, -415));
+            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(1465, -475));
+            viewEntity.CreateItem(new Vector2(200, 50), new Vector2(1675, -535));
+            viewEntity.CreateItem(new Vector2(200, 50.55f), new Vector2(1885, -595));
         }
 
         [TearDown]
@@ -91,12 +91,12 @@ namespace ScrollViewExtension.Scripts.Tests
             // Arrange
             var index = 0;
             var actualPosition = calculator.CalculateBarPosition(index);
-            Assert.AreEqual(1, actualPosition);
+            Assert.AreEqual(0.98876f, actualPosition, 0.01f);
 
             index = 2;
             actualPosition = calculator.CalculateBarPosition(index);
 
-            Assert.AreEqual(0.7415f, actualPosition, 0.01f);
+            Assert.AreEqual(0.71943f, actualPosition, 0.01f);
         }
 
         [Test]
@@ -169,12 +169,12 @@ namespace ScrollViewExtension.Scripts.Tests
             index = 1;
             contentPos = new Vector3(0, 119.05f, 0);
             actualOffset = calculator.CalculateOffset(index, count, contentPos);
-            Assert.AreEqual(new Vector4(120, 0, 5, 0), actualOffset);
+            Assert.AreEqual(new Vector4(65, 0, 5, 0), actualOffset);
 
             index = 5;
             contentPos = new Vector3(0, 445, 0);
             actualOffset = calculator.CalculateOffset(index, count, contentPos);
-            Assert.AreEqual(new Vector4(350, 0, 5, 0), actualOffset);
+            Assert.AreEqual(new Vector4(355, 0, 5, 0), actualOffset);
         }
 
         [Test]

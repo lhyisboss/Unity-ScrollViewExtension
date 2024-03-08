@@ -169,20 +169,16 @@ namespace ScrollViewExtension.Scripts.Core.Entity
         /// </summary>
         /// <param name="count">計算する複数ノードの数。</param>
         /// <param name="index">開始インデックス（既定値は0）。</param>
+        /// <param name="includePadding"></param>
         /// <returns>コンテンツの長さ。</returns>
-        public float GetContentLength(int count, int index = 0)
+        public float GetContentLength(int count, int index = 0, bool includePadding = true)
         {
             var length = 0f;
-
-            // 選択された範囲の内容に対して長さを計算します。
+            
             var list = GetRange(index, count);
-            length += list.Sum(i => IsVertical ? i.Size.y : i.Size.x);
+            length += list.Sum(i => GetItemSize(i.Index));
 
-            // スペースとパディングを追加します。
-            length += index == 0 ? (list.Count - 1) * Spacing : list.Count * Spacing;
-
-            // 最初のインデックスの場合、デフォルトのパディングを追加します。
-            if (index == 0)
+            if (includePadding)
                 length += IsVertical ? DefaultPadding.top : DefaultPadding.left;
 
             return length;
@@ -207,7 +203,7 @@ namespace ScrollViewExtension.Scripts.Core.Entity
                 // 以下はパディングオフセット（余白）の計算に用います。
                 var topPaddingOffset = lastItem.Position.y == 0 ? DefaultPadding.top : 0;
                 var leftPaddingOffset = lastItem.Position.x == 0 ? DefaultPadding.left : 0;
-                var spacingOffset = index == 1 ? 0 : Spacing; // アイテム間のスペーシングを決定します。
+                var spacingOffset = index == Data[^1].Index ? 0 : Spacing; // アイテム間のスペーシングを決定します。
 
                 // 新しいアイテムの座標を計算します。
                 position = new Vector2(lastItem.Position.x + leftPaddingOffset + lastItem.Size.x + spacingOffset,
@@ -239,14 +235,11 @@ namespace ScrollViewExtension.Scripts.Core.Entity
         {
             // indexが範囲外の場合、例外をスロー
             if (index < 0 || index >= Data.Count)
-                throw new ArgumentException("indexは無効です");
-
-            // indexが0の場合、パディングを考慮したサイズを返す
-            if (index == 0)
-                return IsVertical
-                    ? Data[index].Size.y + DefaultPadding.top // 縦方向の場合、アイテムの高さ＋パディング
-                    : Data[index].Size.x + DefaultPadding.left; // 横方向の場合、アイテムの幅＋パディング
-
+                throw new ArgumentException($"indexは無効です,{index}");
+            
+            if (index == Data[^1].Index)
+                return IsVertical ? Data[index].Size.y : Data[index].Size.x;
+            
             // indexが1以上の場合、スペーシングを考慮したサイズを返す
             return IsVertical
                 ? Data[index].Size.y + Spacing // 縦方向の場合、アイテムの高さ＋スペーシング

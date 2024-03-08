@@ -11,8 +11,9 @@ namespace ScrollViewExtension.Scripts.Core.UseCase.Interface
         /// <summary>
         /// インスタンスの数を計算
         /// </summary>
+        /// <param name="needDoubleGen"></param>
         /// <returns>インスタンス数</returns>
-        int CalculateInstanceNumber();
+        int CalculateInstanceNumber(bool needDoubleGen = false);
 
         /// <summary>
         /// コンテンツのサイズを計算
@@ -30,11 +31,12 @@ namespace ScrollViewExtension.Scripts.Core.UseCase.Interface
         /// <summary>
         /// インデックス、カウント、コンテンツの位置に基づくオフセットを計算
         /// </summary>
-        /// <param name="index">インデックス</param>
+        /// <param name="index"></param>
         /// <param name="count">カウント</param>
         /// <param name="contentPos">コンテンツの位置</param>
+        /// <param name="needOffset"></param>
         /// <returns>オフセット</returns>
-        Vector4 CalculateOffset(int index, int count, Vector3 contentPos);
+        Vector4 CalculateOffset(int index, int count, Vector3 contentPos, bool needOffset = false);
 
         /// <summary>
         /// 0:スクロールしない、正数:下方向、負数:上方向でスクロールを計算

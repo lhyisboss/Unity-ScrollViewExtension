@@ -23,10 +23,8 @@ namespace ScrollViewExtension.Scripts
 
         [SerializeField] private TextMeshProUGUI text;
 
-        public override void Show(Base @base)
+        protected override void Show(Base @base)
         {
-            base.Show(@base);
-            
             text.text = @base.num.ToString();
             
             gameObject.SetActive(true);

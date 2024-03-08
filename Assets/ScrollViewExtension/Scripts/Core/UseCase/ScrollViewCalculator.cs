@@ -15,15 +15,20 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
         private static ScrollViewCalculator<TData> instance;
         
         private float maxOffset;
+        private float lastOffsetLength;
+        private float lastContentPos;
 
         public static ScrollViewCalculator<TData> CreateInstance(IScrollViewEntity<TData> viewEntity, IFindIndex<TData> findIndex)
         {
             return instance ??= new ScrollViewCalculator<TData>(viewEntity, findIndex);
         }
 
-        public int CalculateInstanceNumber()
+        public int CalculateInstanceNumber(bool needDoubleGen)
         {
-            var number = Mathf.CeilToInt(viewEntity.GetViewLength / viewEntity.GetItemMinLength()) + 1;
+            var number = Mathf.CeilToInt(viewEntity.GetViewLength / viewEntity.GetItemMinLength());
+            
+            number += needDoubleGen ? 0 : 1;
+            number *= needDoubleGen ? 2 : 1;
 
             return viewEntity.Data.Count >= number ? number : viewEntity.Data.Count;
         }
@@ -107,12 +112,13 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
         /// <summary>
         /// フレームワーク内の特定の位置に基づいてOffsetを計算します。
         /// </summary>
-        /// <param name="index">項目の開始インデックス</param>
+        /// <param name="index"></param>
         /// <param name="count">対象となる項目の数</param>
         /// <param name="contentPos">コンテンツ位置。XおよびY座標で指定します。</param>
+        /// <param name="preload"></param>
         /// <returns>計算されたオフセットを表す4次元ベクトル</returns>
         /// <exception cref="ArgumentException">countが0の場合にスローされます</exception>
-        public Vector4 CalculateOffset(int index, int count, Vector3 contentPos)
+        public Vector4 CalculateOffset(int index, int count, Vector3 contentPos, bool preload)
         {
             // カウントが0であることは許可されていません
             if (count <= 0)
@@ -132,17 +138,44 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
                 ? (viewEntity.IsVertical ? maxOffset : -maxOffset) * Vector3.one
                 : contentPos;
 
+            var offset = Vector3.zero;
+            
+            if (preload)
+            {
+                var length = CalculateBarOffset(index, count, contentPos);
+                offset = new Vector3(-length, length, 0);
+            }
+            
             // オフセットを計算します
-            var offset = viewEntity.GetContentLength(findIndex.ByPosition(contentPos, viewEntity));
-
+            var target = viewEntity.GetContentLength(findIndex.ByPosition(contentPos - offset, viewEntity), 0, false);
+            
             // オフセットを含むベクトルを生成して返します
             return CreateVectorWithOffset(viewEntity.IsVertical,
-                Mathf.Clamp(offset, 0, maxOffset));
+                Mathf.Clamp(target, 0, maxOffset));
         }
 
         public void Dispose()
         {
             instance = null;
+        }
+
+        private float CalculateBarOffset(int index, int count, Vector3 conPos)
+        {
+            var length = viewEntity.GetContentLength(count, index) * 0.25f;
+
+            var cP = viewEntity.IsVertical ? conPos.y : -conPos.x;
+            var isSameDir = (cP > lastContentPos && length > lastOffsetLength) ||
+                            (cP < lastContentPos && length < lastOffsetLength);
+
+            if (isSameDir)
+            {
+                length = lastOffsetLength;
+            }
+
+            lastOffsetLength = length;
+            lastContentPos = cP;
+            
+            return length;
         }
 
         private Vector4 CreateVectorWithOffset(bool isVertical, float offset)

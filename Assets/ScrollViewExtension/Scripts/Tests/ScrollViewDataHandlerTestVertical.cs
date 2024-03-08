@@ -94,9 +94,9 @@ namespace ScrollViewExtension.Scripts.Tests
             item = handler.GetRange(6, 4);
 
             // Assert
-            Assert.That(item[0].Position, Is.EqualTo(new Vector2(1255, -405))); 
-            Assert.That(item[1].Position, Is.EqualTo(new Vector2(1465, -465))); //Positions should be updated
-            Assert.That(item[2].Position, Is.EqualTo(new Vector2(1675, -575))); //Positions should be updated
+            Assert.That(item[0].Position, Is.EqualTo(new Vector2(1265, -415))); 
+            Assert.That(item[1].Position, Is.EqualTo(new Vector2(1475, -475))); //Positions should be updated
+            Assert.That(item[2].Position, Is.EqualTo(new Vector2(1685, -585))); //Positions should be updated
             Assert.That(item[3].Position, Is.EqualTo(new Vector2(1885, -635))); //Positions should be updated
         }
     }

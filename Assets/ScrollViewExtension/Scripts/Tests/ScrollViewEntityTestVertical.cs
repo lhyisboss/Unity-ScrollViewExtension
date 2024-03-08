@@ -120,13 +120,13 @@ namespace ScrollViewExtension.Scripts.Tests
             Assert.AreEqual(45.5f, length, 0.01f);
 
             length = instance.GetContentLength(1);
-            Assert.AreEqual(6, length, 0.01f); 
+            Assert.AreEqual(16, length, 0.01f); 
             
             length = instance.GetContentLength(2, 1);
-            Assert.AreEqual(25, length, 0.01f);
+            Assert.AreEqual(30, length, 0.01f);
             
             length = instance.GetContentLength(2, 2);
-            Assert.AreEqual(27.5f, length, 0.01f);
+            Assert.AreEqual(22.5f, length, 0.01f);
         }
 
         [Test]
@@ -139,20 +139,20 @@ namespace ScrollViewExtension.Scripts.Tests
                 false);
             // Let's add some items
             containerView.CreateItem(new Vector2(20, 20), new Vector2(0, 0)); // Item 0
-            containerView.CreateItem(new Vector2(30, 30), new Vector2(25, -25)); // Item 1
-            containerView.CreateItem(new Vector2(40, 40), new Vector2(65, -65)); // Item 2
-            containerView.CreateItem(new Vector2(50, 54.12f), new Vector2(115, -115)); // Item 3
+            containerView.CreateItem(new Vector2(30, 30), new Vector2(35, -35)); // Item 1
+            containerView.CreateItem(new Vector2(40, 40), new Vector2(75, -75)); // Item 2
+            containerView.CreateItem(new Vector2(50, 54.12f), new Vector2(125, -125)); // Item 3
             containerView.CreateItem(new Vector2(60, 62.33f), new Vector2(175, -179.12f)); // Item 4
 
             // Now let's test the CalculateItemPosition method
             // The first item should have position (0,0)
             Assert.AreEqual(new Vector2(0, 0), containerView.CalculateItemPosition(0));
 
-            Assert.AreEqual(new Vector2(25, -25), containerView.CalculateItemPosition(1));
+            Assert.AreEqual(new Vector2(35, -35), containerView.CalculateItemPosition(1));
 
-            Assert.AreEqual(new Vector2(65, -65), containerView.CalculateItemPosition(2));
+            Assert.AreEqual(new Vector2(75, -75), containerView.CalculateItemPosition(2));
             
-            Assert.AreEqual(new Vector2(115, -115), containerView.CalculateItemPosition(3));
+            Assert.AreEqual(new Vector2(125, -125), containerView.CalculateItemPosition(3));
             
             Assert.AreEqual(new Vector2(175, -179.12f), containerView.CalculateItemPosition(4));
         }
@@ -186,11 +186,11 @@ namespace ScrollViewExtension.Scripts.Tests
             containerView.CreateItem(new Vector2(40, 40), new Vector2(75, 75)); // Item 2
 
             // The first item's width should be equal to its size plus the left padding
-            Assert.AreEqual(20 + 5, containerView.GetItemSize(0));
+            Assert.AreEqual(30, containerView.GetItemSize(0));
 
             // The size of any other item should be equal to its width plus the spacing
-            Assert.AreEqual(30 + 10, containerView.GetItemSize(1));
-            Assert.AreEqual(40 + 10, containerView.GetItemSize(2));
+            Assert.AreEqual(40, containerView.GetItemSize(1));
+            Assert.AreEqual(40, containerView.GetItemSize(2));
         }
     }
 }
