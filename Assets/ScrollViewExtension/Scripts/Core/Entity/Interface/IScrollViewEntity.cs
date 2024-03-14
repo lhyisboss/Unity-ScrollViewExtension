@@ -88,5 +88,7 @@ namespace ScrollViewExtension.Scripts.Core.Entity.Interface
         /// </summary>
         /// <returns>垂直方向場合はtrue、そうでない場合はfalse。</returns>
         bool IsVertical { get; set; }
+
+        void RemoveItem(int index);
     }
 }

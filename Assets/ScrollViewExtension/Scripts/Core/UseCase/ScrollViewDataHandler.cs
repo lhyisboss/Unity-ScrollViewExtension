@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using ScrollViewExtension.Scripts.Adapter.DTO;
 using ScrollViewExtension.Scripts.Core.Entity.Interface;
 using ScrollViewExtension.Scripts.Core.Service.Interface;
@@ -26,7 +27,24 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
             var position = viewEntity.CalculateItemPosition(viewEntity.Data.Count);
             return viewEntity.CreateItem(size, position);
         }
+        
+        public void CreateMultipleItems(List<TData> data)
+        {
+            viewEntity.Data = data;
+            UpdatePositionsFromIndex(0);
+        }
 
+        public void RemoveItem(int index)
+        {
+            viewEntity.RemoveItem(index);
+            UpdatePositionsFromIndex(index);
+        }
+
+        public void RemoveBottomItem()
+        {
+            RemoveItem(viewEntity.Data[^1].Index);
+        }
+        
         public List<TData> GetRange(int index, int count)
         {
             if (viewEntity.Data.Count <= 0 || viewEntity.Data is null)
@@ -52,21 +70,16 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
         public void UpdatePositionsFromIndex(int index)
         {
             // 指定されたインデックスからデータカウントまでループします。
-            for (var i = index; i < viewEntity.Data.Count; i++)
+            foreach (var item in viewEntity.Data.Skip(index))
             {
-                // アイテムの位置を計算します。
-                var pos = viewEntity.CalculateItemPosition(i);
-
-                // 計算された位置をデータに設定します。
-                viewEntity.UpdateItemPosition(Mathf.Min(i, viewEntity.Data.Count - 1), pos);
+                var pos = viewEntity.CalculateItemPosition(item.Index);
+                viewEntity.UpdateItemPosition(item.Index, pos);
             }
         }
 
-        public void SetScrollItems(List<TData> data)
+        public bool IsDataBulkGreaterThanInstance(int genNum)
         {
-            viewEntity.Data = data;
-         
-            UpdatePositionsFromIndex(0);
+            return viewEntity.Data.Count > genNum;
         }
 
         public void Dispose()

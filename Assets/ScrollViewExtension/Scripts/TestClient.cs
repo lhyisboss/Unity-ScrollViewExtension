@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -18,8 +19,6 @@ namespace ScrollViewExtension.Scripts
         private int nextIndex;
 
         private float nextBar;
-
-        private int count;
         
         public void Show()
         {
@@ -35,7 +34,6 @@ namespace ScrollViewExtension.Scripts
             //     var item = test.CreateItem(new Vector2(50, 80));
             //     item.num = i;
             // }
-            
             test.Show();
             indexText.text = "next index: " + nextIndex;
             barText.text = "next bar: " + nextBar;
@@ -46,9 +44,11 @@ namespace ScrollViewExtension.Scripts
         /// </summary>
         public void OnClickAddButton()
         {
-            var item = test.CreateItem(new Vector2(50, 40));
-            item.num = count;
-            count++;
+            for (int i = 0; i < 1; i++)
+            {
+                var item = test.CreateItem(new Vector2(100, 40));
+                item.num = item.Index;
+            }
             
             //今のBar位置は一番下にいる場合は一番下を表示する、でないと今の位置のままで表示する
             // if (test.GetScrollBarPos() == 0)
@@ -59,6 +59,12 @@ namespace ScrollViewExtension.Scripts
             // { 
             //     test.Show();
             // }
+            test.Show();
+        }
+        
+        public void OnClickRemoveButton()
+        {
+            test.RemoveItem();
             test.Show();
         }
 
@@ -84,6 +90,13 @@ namespace ScrollViewExtension.Scripts
         private IEnumerator InitAndShow()
         {
             yield return null;
+
+            // var list = new List<DynamicScrollTestItem.Base>();
+            // for (var i = 0; i < 5000; i++)
+            // {
+            //     list.Add(new DynamicScrollTestItem.Base(new Vector2(200, 50), i));
+            // }
+
             test.Initialize();
             Show();
         }

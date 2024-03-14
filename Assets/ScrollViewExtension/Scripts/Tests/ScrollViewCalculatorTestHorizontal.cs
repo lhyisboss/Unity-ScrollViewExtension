@@ -160,17 +160,17 @@ namespace ScrollViewExtension.Scripts.Tests
             var contentPos = new Vector3(0, 0, 0);
 
             // Act
-            var actualOffset = calculator.CalculateOffset(index, count, contentPos);
+            var actualOffset = calculator.CalculateOffset(count, contentPos);
             Assert.AreEqual(new Vector4(5, 0, 5, 0), actualOffset);
 
             index = 1;
             contentPos = new Vector3(-119.05f, 0, 0);
-            actualOffset = calculator.CalculateOffset(index, count, contentPos);
+            actualOffset = calculator.CalculateOffset(count, contentPos);
             Assert.AreEqual(new Vector4(5, 0, 65, 0), actualOffset);
 
             index = 5;
             contentPos = new Vector3(-445, 0, 0);
-            actualOffset = calculator.CalculateOffset(index, count, contentPos);
+            actualOffset = calculator.CalculateOffset(count, contentPos);
             Assert.AreEqual(new Vector4(5, 0, 355, 0), actualOffset);
         }
 
@@ -183,7 +183,7 @@ namespace ScrollViewExtension.Scripts.Tests
             var contentPos = new Vector3(0, 0, 0);
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => calculator.CalculateOffset(index, count, contentPos));
+            Assert.Throws<ArgumentException>(() => calculator.CalculateOffset(count, contentPos));
         }
     }
 }

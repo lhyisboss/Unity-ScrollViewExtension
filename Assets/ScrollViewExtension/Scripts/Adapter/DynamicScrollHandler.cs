@@ -2,21 +2,13 @@
  * ***********************************************
  *
  * 機能名: DynamicScrollView
- * バージョン: 0.2.4
- * 作成日: 2023-12-06
+ * バージョン: 0.2.5
  * 作者: lhyisboss
  * 言語: C#
  * 機能:
  * HorizontalOrVerticalLayoutGroupの上で、
  * 一列生成数の最適化かつ実行途中で動的サイズ変更できる処理を担っています。
- * Clean Architectureを基に構成されました。大まかな流れとしては以下に：
- *
- * Adapter => UseCase => Service => Entity
- *
- * Adapterは単に内部層にInputを提供し、返したOutputを使ってUIを更新します。
- * UseCaseはInputを受け取り、ServiceやEntityとやり取りし、Outputを生成します。
- * Entityは核となるロジック、検証やデータを管理するクラスです。
- *
+ * 
  * 配置流れ:
  * 1.このクラスを継承して具体的なTDataとTItemを指定する
  * 2.継承したクラスを目標とするScrollViewオブジェクトにアタッチしてフィールドを設定する
@@ -24,7 +16,7 @@
  *
  * 使用流れ(二つに分ける):
  * 1.
- * 事前にlistを用意してInitializeの時にlistを渡してShowを呼ぶだけ
+ * 事前にlistを用意してInitializeの時にlistを渡してShowを呼ぶ
  *
  * 2.
  * Initializeをパラメータなしで実行し、その後CreateItemを呼んで新しいアイテムを追加して最後はShowを呼ぶ
@@ -35,7 +27,6 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using ScrollViewExtension.Scripts.Adapter.DTO;
 using ScrollViewExtension.Scripts.Common;
@@ -95,7 +86,7 @@ namespace ScrollViewExtension.Scripts.Adapter
 
         private bool isInitialized;
 
-        public TItem ItemPrefab => itemPrefab;
+        private bool isRemovedItem;
 
         /// <summary>
         /// データの数が変更なしなら、このまま呼んでいいですが、
@@ -104,59 +95,19 @@ namespace ScrollViewExtension.Scripts.Adapter
         /// <param name="startIndex"></param>
         public void Show(int startIndex)
         {
-            if (IsItemDataListNull())
-            {
-                UpdateContentSize();
-                return;
-            }
+            Show();
             
-            //item生成
-            var count = calculator.CalculateInstanceNumber(needPreLoadNode);
-            list = list.Count < count ? pool.Get(count).ToList() : list;
-            
-            //表示する
-            var range = dataHandler.GetRange(startIndex, count);
-            UpdateListData(range);
-            
-            UpdateContentSize();
-            
-            //bar位置設置
+            // bar位置設置
             var barPosition = calculator.CalculateBarPosition(startIndex);
             scrollRect.normalizedPosition = new Vector2(barPosition, barPosition);
-            
-            //padding設置
-            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition);
-            UpdatePadding(v4);
-            
-            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
         }
 
         public void Show(float barPosition)
         {
-            if (IsItemDataListNull())
-            {
-                UpdateContentSize();
-                return;
-            }
+            Show();
             
-            //item生成
-            var count = calculator.CalculateInstanceNumber(needPreLoadNode);
-            list = list.Count < count ? pool.Get(count).ToList() : list;
-            
-            UpdateContentSize();
-            
-            //bar位置設置
+            // bar位置設置
             scrollRect.normalizedPosition = new Vector2(barPosition, barPosition);
-            
-            //表示する
-            var range = dataHandler.GetRange(scrollRect.content.anchoredPosition, count);
-            UpdateListData(range);
-            
-            //padding設置
-            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition);
-            UpdatePadding(v4);
-            
-            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
         }
         
         public void Show()
@@ -169,28 +120,36 @@ namespace ScrollViewExtension.Scripts.Adapter
             
             //item生成
             var count = calculator.CalculateInstanceNumber(needPreLoadNode);
+            
+            for (var i = 0; i < list.Count - count; i++)
+            {
+                RecycleLastItemIntoPool(); // アイテム削除際に余ったリスト要素も削除する
+            }
+            
             var needUpData = list.Count < count;
             if (needUpData)
-                UpdateListToRequiredCount(count);
+                UpdateListToRequiredCount(count); // リスト数をcount数に合わせる
             
             UpdateContentSize();
 
             if (needUpData)
             {
-                //表示する
+                // データを選別して表示する
                 var range = dataHandler.GetRange(scrollRect.content.anchoredPosition, count);
                 UpdateListData(range);
                 
-                //padding設置
-                var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition);
+                // padding設置
+                var v4 = calculator.CalculateOffset(list.Count, scrollRect.content.anchoredPosition);
                 UpdatePadding(v4);
             }
-            else if (needRefreshView)
+            else if (needRefreshView && !isRemovedItem)
             {
-                //表示する
+                // 表示する
                 var range = dataHandler.GetRange(list[0].Data.Index, count);
                 UpdateListData(range);
             }
+
+            isRemovedItem = false;
             
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
         }
@@ -199,18 +158,18 @@ namespace ScrollViewExtension.Scripts.Adapter
         {
             if (!isInitialized || list == null || IsItemDataListNull())
             {
-                scrollRect.velocity = Vector2.zero; //OnValueChangedはなるべく呼ばないためにゼロにした
+                scrollRect.velocity = Vector2.zero; // OnValueChangedをなるべく呼ばないためにゼロにした
                 
                 if (isVertical)
-                    scrollRect.verticalScrollbar.size = 1; //barがAutohideになっていない場合の対策
+                    scrollRect.verticalScrollbar.size = 1; // barがAutohideになっていない場合の対策
                 else
                     scrollRect.horizontalScrollbar.size = 1;
                 
                 return;
             }
 
-            //padding設置
-            var v4 = calculator.CalculateOffset(list[0].Data.Index, list.Count, scrollRect.content.anchoredPosition, needPreLoadNode);
+            // padding設置
+            var v4 = calculator.CalculateOffset(list.Count, scrollRect.content.anchoredPosition, needPreLoadNode);
             
             var count = calculator.CalculateRolling(lastPadding, v4, list[0].Data.Index);
             
@@ -232,13 +191,18 @@ namespace ScrollViewExtension.Scripts.Adapter
             return item;
         }
 
-        /// <summary>
-        /// 現在のitemリストを基にContentSizeを更新する
-        /// </summary>
-        public void UpdateContentSize()
+        public void RemoveItem()
         {
-            //contentサイズ設置
-            scrollRect.content.sizeDelta = calculator.CalculateContentSize();
+            if (IsItemDataListNull()) return;
+            
+            if (!dataHandler.IsDataBulkGreaterThanInstance(calculator.CalculateInstanceNumber(needPreLoadNode)))
+            {
+                RecycleLastItemIntoPool();
+            }
+            
+            dataHandler.RemoveBottomItem();
+            
+            isRemovedItem = true;
         }
 
         /// <summary>
@@ -320,6 +284,13 @@ namespace ScrollViewExtension.Scripts.Adapter
             
             isInitialized = false;
         }
+        
+        private void RecycleLastItemIntoPool()
+        {
+            var viewItem = list[^1];
+            pool.Return(viewItem);
+            list.Remove(viewItem);
+        }
 
         private void SetItems(List<TData> shell)
         {
@@ -328,12 +299,21 @@ namespace ScrollViewExtension.Scripts.Adapter
                 x.OnItemSizeChanged += OnItemSizeChanged;
             });
 
-            dataHandler.SetScrollItems(shell);
+            dataHandler.CreateMultipleItems(shell);
         }
         
         private bool IsItemDataListNull()
         {
             return dataHandler.GetRange(0, 1) is null;
+        }
+        
+        /// <summary>
+        /// 現在のitemリストを基にContentSizeを更新する
+        /// </summary>
+        private void UpdateContentSize()
+        {
+            // contentサイズ設置
+            scrollRect.content.sizeDelta = calculator.CalculateContentSize();
         }
         
         private void UpdateListToRequiredCount(int count)

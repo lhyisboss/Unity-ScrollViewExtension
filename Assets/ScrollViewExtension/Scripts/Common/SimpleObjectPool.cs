@@ -44,8 +44,8 @@ namespace ScrollViewExtension.Scripts.Common
 
         public void Reset(TItem item)
         {
-            item.gameObject.SetActive(false);
             item.transform.SetParent(content.parent, false);
+            item.gameObject.SetActive(false);
         }
 
         public void Destroy(TItem item)

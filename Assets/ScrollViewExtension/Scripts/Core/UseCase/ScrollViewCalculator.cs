@@ -27,7 +27,7 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
         {
             var number = Mathf.CeilToInt(viewEntity.GetViewLength / viewEntity.GetItemMinLength());
             
-            number += needDoubleGen ? 0 : 1;
+            number += needDoubleGen ? 0 : 1; // ジャストサイズを防ぐために+1
             number *= needDoubleGen ? 2 : 1;
 
             return viewEntity.Data.Count >= number ? number : viewEntity.Data.Count;
@@ -46,9 +46,7 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
 
         public float CalculateBarPosition(int index)
         {
-            const float offset = 0.00001f; //unity barの計算はすごく小さいな誤差があるため、その対策です
-            
-            var vertical = Mathf.Clamp01(1 - viewEntity.GetContentLength(index) / GetScrollableRange() - offset);
+            var vertical = Mathf.Clamp01(1 - viewEntity.GetContentLength(index) / GetScrollableRange());
          
             if(viewEntity.IsVertical) 
                 return vertical;
@@ -112,13 +110,12 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
         /// <summary>
         /// フレームワーク内の特定の位置に基づいてOffsetを計算します。
         /// </summary>
-        /// <param name="index"></param>
         /// <param name="count">対象となる項目の数</param>
         /// <param name="contentPos">コンテンツ位置。XおよびY座標で指定します。</param>
         /// <param name="preload"></param>
         /// <returns>計算されたオフセットを表す4次元ベクトル</returns>
         /// <exception cref="ArgumentException">countが0の場合にスローされます</exception>
-        public Vector4 CalculateOffset(int index, int count, Vector3 contentPos, bool preload)
+        public Vector4 CalculateOffset(int count, Vector3 contentPos, bool preload)
         {
             // カウントが0であることは許可されていません
             if (count <= 0)
@@ -142,7 +139,7 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
             
             if (preload)
             {
-                var length = CalculateBarOffset(index, count, contentPos);
+                var length = CalculateBarOffset(viewEntity.Data[^count].Index, count, contentPos);
                 offset = new Vector3(-length, length, 0);
             }
             
@@ -161,13 +158,13 @@ namespace ScrollViewExtension.Scripts.Core.UseCase
 
         private float CalculateBarOffset(int index, int count, Vector3 conPos)
         {
-            var length = viewEntity.GetContentLength(count, index) * 0.25f;
+            var length = viewEntity.GetContentLength(count, index) * 0.25f; // 生成数が2倍なので、四等分にします
 
             var cP = viewEntity.IsVertical ? conPos.y : -conPos.x;
             var isSameDir = (cP > lastContentPos && length > lastOffsetLength) ||
                             (cP < lastContentPos && length < lastOffsetLength);
 
-            if (isSameDir)
+            if (isSameDir) // 同じ方向の場合は長さを固定する必要がある、じゃないとぶれが発生します
             {
                 length = lastOffsetLength;
             }

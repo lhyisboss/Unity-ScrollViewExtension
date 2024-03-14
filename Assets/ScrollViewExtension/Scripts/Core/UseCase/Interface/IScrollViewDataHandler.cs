@@ -17,6 +17,8 @@ namespace ScrollViewExtension.Scripts.Core.UseCase.Interface
         /// <returns>作成されたアイテム。</returns>
         TData CreateItem(Vector2 size);
 
+        void CreateMultipleItems(List<TData> data);
+
         /// <summary>
         /// 指定された範囲のアイテムを取得します。
         /// </summary>
@@ -38,7 +40,11 @@ namespace ScrollViewExtension.Scripts.Core.UseCase.Interface
         /// </summary>
         /// <param name="index">開始するインデックス。</param>
         void UpdatePositionsFromIndex(int index);
+        
+        void RemoveItem(int index);
 
-        void SetScrollItems(List<TData> data);
+        void RemoveBottomItem();
+        
+        bool IsDataBulkGreaterThanInstance(int genNum);
     }
 }

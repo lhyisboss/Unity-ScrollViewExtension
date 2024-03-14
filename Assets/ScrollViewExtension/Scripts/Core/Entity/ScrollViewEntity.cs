@@ -9,7 +9,7 @@ namespace ScrollViewExtension.Scripts.Core.Entity
 {
     internal class ScrollViewEntity<TData> : IScrollViewEntity<TData> where TData : ScrollItemBase, new()
     {
-        private static ScrollViewEntity<TData> instance;
+        private static ScrollViewEntity<TData> instance; // 複数Viewを同時に表示する使用例がないため、とりあえず単例
         
         private int instanceCount;
 
@@ -134,6 +134,30 @@ namespace ScrollViewExtension.Scripts.Core.Entity
             return newItem;
         }
 
+        public void RemoveItem(int index)
+        {
+            if(index < 0 || index >= Data.Count)
+                throw new Exception($"index is invalid,{index}");
+            
+            // instanceCountを減らします
+            if(instanceCount > 0)
+                instanceCount--;
+
+            // 指定したインデックスのアイテムを削除します
+            var item = Data[index];
+            item.Dispose();
+            Data.Remove(item);
+            
+            // 残りのアイテムのindexを更新します
+            var count = Data.Count - index;
+            var list = GetRange(index, count);
+            list?.ForEach(i =>
+            {
+                i.Index = index;
+                index++;
+            });
+        }
+
         /// <summary>
         /// 指定範囲のデータを取得します。
         /// </summary>
@@ -146,7 +170,7 @@ namespace ScrollViewExtension.Scripts.Core.Entity
             // start または count が 0 以下、または start + count が Data の数より大きい場合、
             // ArgumentException をスローします。
             if (start < 0 || count < 0 || start + count > Data.Count)
-                throw new ArgumentException("start or count is invalid");
+                throw new ArgumentException($"start or count is invalid,start:{start},count:{count}");
 
             // 指定した範囲のデータを取得して返します。
             return Data.GetRange(start, count);
